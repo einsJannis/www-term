@@ -1,0 +1,33 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+}
+
+.terminal {
+    font-family: monospace;
+    color: #fff;
+    background-color: #000;
+    margin: 0;
+    padding: 0;
+    height: 100dvh;
+    width: 100dvw;
+}
+
+.terminal input {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.terminal input:focus {
+    outline: none;
+}
+
+.terminal p {
+    margin: 0;
+    padding: 0;
+}

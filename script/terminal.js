@@ -35,7 +35,7 @@ export class Terminal {
         input.addEventListener("keydown", (event) => {
           if (event.key === "Enter") {
             event.preventDefault();
-            input.readOnly = true;
+            input.disabled = true;
             resolve(input.value);
           }
         });

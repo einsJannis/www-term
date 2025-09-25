@@ -6,7 +6,7 @@ export class Shell {
     this.user = "guest";
   }
 
-  async start() {
+  async run() {
     while (!this.shouldExit) {
       this.terminal.print(this.user + "@website:" + this.path + "> ");
       const input = await this.terminal.readLine();
@@ -24,7 +24,7 @@ export class Shell {
         this.exit();
         break;
       default:
-        this.terminal.print("Unknown command");
+        this.terminal.println("Unknown command");
     }
   }
 
