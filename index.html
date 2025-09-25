@@ -1,15 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <title>Console</title>
-        <script src="/js/terminal.js"></script>
-        <link rel="stylesheet" type="text/css" href="/css/console.css">
+        <link rel="stylesheet" type="text/css" href="/style/terminal.css" />
     </head>
     <body>
-        <p>Welcome on the website owned by <b>einsJannis</b>. You can navigate by using commands, type '<i>help</i>' to start.</p>
-        <br>
-        <script>
-            initTerminal()
+        <main id="terminal" />
+        <script type="module">
+            import { Terminal } from "/script/terminal.js";
+            import { Shell } from "/script/shell.js";
+            const terminal = new Terminal(document.getElementById("terminal"));
+            const shell = new Shell(terminal);
+            shell.start();
         </script>
     </body>
 </html>
