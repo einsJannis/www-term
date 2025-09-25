@@ -9,8 +9,21 @@
         <script type="module">
             import { Terminal } from "/script/terminal.js";
             import { Shell } from "/script/shell.js";
+            import { File, Directory, createRoot } from "/script/filesystem.js";
             const terminal = new Terminal(document.getElementById("terminal"));
-            const shell = new Shell(terminal);
+            const aboutme = new File("aboutme.txt");
+            aboutme.write(`
+                Hello, I'm Jannis!\n
+                I'm a software engineer from Switzerland.\n
+                I love to learn new things and share my knowledge with others.
+            `);
+            const homeDirectory = new Directory("einsjannis");
+            homeDirectory.addChild(aboutme);
+            const home = new Directory("home");
+            home.addChild(homeDirectory);
+            const root = createRoot();
+            root.addChild(home);
+            const shell = new Shell(terminal, root, homeDirectory);
             shell.run();
         </script>
     </body>

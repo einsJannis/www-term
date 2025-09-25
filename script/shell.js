@@ -1,62 +1,84 @@
+import { commands, parseParts } from "./command.js";
+
 export class Shell {
-  constructor(terminal) {
+  constructor(terminal, root, currentDirectory) {
     this.shouldExit = false;
     this.terminal = terminal;
-    this.path = "/home/einsjannis/";
     this.user = "guest";
+    this.root = root;
+    this.currentDirectory = currentDirectory;
   }
 
   async run() {
     while (!this.shouldExit) {
-      this.terminal.print(this.user + "@website:" + this.path + "> ");
+      this.terminal.print(
+        this.user + "@website:" + this.currentDirectory.getPath() + "> ",
+      );
       const input = await this.terminal.readLine();
-      this.parseCommand(input);
+      this.runCommand(parseParts(input));
     }
   }
 
-  parseCommand(input) {
-    const [command, ...args] = input.split(" ");
+  runCommand(args) {
+    const command = args[0];
     switch (command) {
+      case "su":
+        this.su(args[1]);
+        break;
       case "cd":
-        this.cd(args[0]);
+        if (args.length != 2) {
+          this.terminal.println("Usage: cd <directory>");
+          return;
+        }
+        this.cd(args[1]);
         break;
       case "exit":
         this.exit();
         break;
       default:
-        this.terminal.println("Unknown command");
+        commands[command]
+          ? commands[command](this.terminal, this.currentDirectory, args)
+          : this.terminal.println("Unknown command");
     }
+  }
+
+  su(user) {
+    this.user = user;
   }
 
   cd(path) {
-    function is_absolute(path) {
-      return path.startsWith("/");
+    if (path.length === 0) return;
+    if (path.startsWith("/")) {
+      this.currentDirectory = this.root;
+      cd(path.substring(1));
+      return;
     }
-
-    function simplify(path) {
-      const parts = path.split("/");
-      const stack = [];
-
-      for (const part of parts) {
-        if (part === "..") {
-          stack.pop();
-        } else if (part !== "." && part !== "") {
-          stack.push(part);
+    const [current, ...rest] = path.split("/");
+    switch (current) {
+      case "..":
+        if (!this.currentDirectory.parent) {
+          this.terminal.println("cd: cannot go up from root");
+          return;
         }
-      }
-
-      return "/" + stack.join("/");
+        this.currentDirectory = this.currentDirectory.parent;
+        break;
+      case ".":
+        break;
+      default:
+        const next = this.currentDirectory.children.find(
+          (child) => child.name === current,
+        );
+        if (!next) {
+          this.terminal.println("cd: directory not found");
+          return;
+        }
+        this.currentDirectory = next;
     }
-
-    if (is_absolute(path)) {
-      this.path = path;
-    } else {
-      this.path = this.path + "/" + path;
-      this.path = simplify(this.path);
-    }
+    this.cd(rest.join("/"));
   }
 
   exit() {
+    this.terminal.println("[Connection closed]");
     this.shouldExit = true;
   }
 }
