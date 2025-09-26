@@ -17,11 +17,24 @@ export class Terminal {
   }
 
   print(message) {
-    this.currentLine().textContent += message;
+    const [first, ...rest] = message.split("\n");
+    this._print(first);
+    if (rest.length > 0) {
+      for (const msg of rest) {
+        this.newLine();
+        this._print(msg);
+      }
+    }
+  }
+
+  _print(message) {
+    const messageElem = document.createElement("span");
+    this.currentLine().appendChild(messageElem);
+    messageElem.textContent += message;
   }
 
   println(message) {
-    this.currentLine().textContent += message;
+    this.print(message);
     this.newLine();
   }
 
@@ -33,9 +46,12 @@ export class Terminal {
       input.focus();
       new Promise((resolve) => {
         input.addEventListener("keydown", (event) => {
+          input.style.width = "auto";
+          input.style.width = `${input.scrollWidth + 10}px`;
           if (event.key === "Enter") {
             event.preventDefault();
             input.disabled = true;
+            scrollY = 0;
             resolve(input.value);
           }
         });

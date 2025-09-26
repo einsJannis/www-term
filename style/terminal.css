@@ -15,6 +15,7 @@ body {
 }
 
 .terminal input {
+    display: block;
     border: none;
     outline: none;
     background-color: transparent;
@@ -28,6 +29,14 @@ body {
 }
 
 .terminal p {
+    display: flex;
+    flex-direction: row;
+    width: fit-content;
     margin: 0;
     padding: 0;
+}
+
+.terminal span {
+    display: block;
+    white-space: pre;
 }
