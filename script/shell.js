@@ -65,9 +65,7 @@ export class Shell {
       case ".":
         break;
       default:
-        const next = this.currentDirectory.children.find(
-          (child) => child.name === current,
-        );
+        const next = this.currentDirectory.getChild(current);
         if (!next) {
           this.terminal.println("cd: directory not found");
           return;
