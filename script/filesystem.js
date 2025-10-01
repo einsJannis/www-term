@@ -28,6 +28,28 @@ export class Directory extends INode {
   getChild(name) {
     return this.children.find((child) => child.name === name);
   }
+  navigate(path) {
+    if (!path || path.length === 0) return this;
+    if (path.startsWith("/")) {
+      return root.navigate(path.substring(1));
+    }
+    const [current, ...rest] = path.split("/");
+    switch (current) {
+      case "..":
+        if (!this.parent) {
+          return undefined;
+        }
+        return this.parent.navigate(rest.join("/"));
+      case ".":
+        return this.navigate(rest.join("/"));
+      default:
+        const next = this.getChild(current);
+        if (!next || next.type !== "Directory") {
+          return undefined;
+        }
+        return next.navigate(rest.join("/"));
+    }
+  }
 }
 
 export class File extends INode {
@@ -43,7 +65,9 @@ export class File extends INode {
   }
 }
 
-export function getDefaultFileSystem() {
+export const root = getDefaultFileSystem();
+
+function getDefaultFileSystem() {
   const root = new Directory(null);
   root.addChild(getHomeDirectory());
   return root;
@@ -58,6 +82,9 @@ function getHomeDirectory() {
 
 function getGuestDirectory() {
   const guest = new Directory("guest");
+  const robots = new File("robots.txt");
+  robots.write("User-Agent: *\nDisallow: /home/einsjannis/");
+  guest.addChild(robots);
   return guest;
 }
 
@@ -79,7 +106,6 @@ function getAboutMeFile() {
 
 function getProjectsDirectory() {
   const projects = new Directory("projects");
-  home.addChild(projects);
   const uIndex = new File("uIndex.md");
   uIndex.write(
     '# uIndex\n\nA minimalistic android launcher which I created because I was annoyed that the Niagara Launcher has a "Pro" subscription.\n\n[You can find out more about it here](https://github.com/einsjannis/uIndex)',

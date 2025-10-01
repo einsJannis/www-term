@@ -1,11 +1,11 @@
 import { commands, parseParts } from "./command.js";
+import { root } from "./filesystem.js";
 
 export class Shell {
-  constructor(terminal, root, currentDirectory) {
+  constructor(terminal, currentDirectory) {
     this.shouldExit = false;
     this.terminal = terminal;
     this.user = "guest";
-    this.root = root;
     this.currentDirectory = currentDirectory;
   }
 
@@ -47,32 +47,12 @@ export class Shell {
   }
 
   cd(path) {
-    if (path.length === 0) return;
-    if (path.startsWith("/")) {
-      this.currentDirectory = this.root;
-      cd(path.substring(1));
+    const next = this.currentDirectory.navigate(path);
+    if (!next) {
+      this.terminal.println("cd: invalid path");
       return;
     }
-    const [current, ...rest] = path.split("/");
-    switch (current) {
-      case "..":
-        if (!this.currentDirectory.parent) {
-          this.terminal.println("cd: cannot go up from root");
-          return;
-        }
-        this.currentDirectory = this.currentDirectory.parent;
-        break;
-      case ".":
-        break;
-      default:
-        const next = this.currentDirectory.getChild(current);
-        if (!next) {
-          this.terminal.println("cd: directory not found");
-          return;
-        }
-        this.currentDirectory = next;
-    }
-    this.cd(rest.join("/"));
+    this.currentDirectory = next;
   }
 
   exit() {

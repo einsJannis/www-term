@@ -9,17 +9,10 @@
         <script type="module">
             import { Terminal } from "/script/terminal.js";
             import { Shell } from "/script/shell.js";
-            import {
-                File,
-                Directory,
-                getDefaultFileSystem,
-            } from "/script/filesystem.js";
+            import { File, Directory, root } from "/script/filesystem.js";
             const terminal = new Terminal(document.getElementById("terminal"));
-            const root = getDefaultFileSystem();
-            const homeDirectory = root.children
-                .getChild("home")
-                .getChild("einsjannis");
-            const shell = new Shell(terminal, root, homeDirectory);
+            const homeDirectory = root.getChild("home").getChild("einsjannis");
+            const shell = new Shell(terminal, homeDirectory);
             shell.run();
         </script>
     </body>

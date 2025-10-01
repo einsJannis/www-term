@@ -1,10 +1,10 @@
 export const commands = {
   ls: function (terminal, currentDirectory, args) {
-    if (args.length > 1) {
-      terminal.println("Usage: ls");
+    if (args.length > 2) {
+      terminal.println("Usage: ls [path]");
       return;
     }
-    currentDirectory.children.forEach((file) => {
+    currentDirectory.navigate(args[1]).children.forEach((file) => {
       terminal.println(file.name);
     });
   },
